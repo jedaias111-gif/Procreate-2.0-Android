@@ -12,17 +12,12 @@ jobs:
       - name: Descargar repositorio
         uses: actions/checkout@v4
 
-      - name: Descomprimir y localizar proyecto Gradle
+      - name: Descomprimir y corregir conflicto de nombre
         run: |
           find . -maxdepth 3 -name "*.zip" -exec unzip -o {} \;
           SETTINGS_FILE=$(find . -maxdepth 4 -name "settings.gradle.kts" | head -n 1)
-          if [ -z "$SETTINGS_FILE" ]; then
-            echo "ERROR: No se encontro settings.gradle.kts. Verifica que el .zip este subido en la pestana Code."
-            ls -la
-            exit 1
-          fi
           PROJECT_DIR=$(dirname "$SETTINGS_FILE")
-          echo "Proyecto Gradle encontrado en: $PROJECT_DIR"
+          find "$PROJECT_DIR" -name "*.kt" -exec sed -i 's/backgroundColor/canvasBgColor/g' {} +
           echo "PROJECT_DIR=$PROJECT_DIR" >> $GITHUB_ENV
 
       - name: Configurar Java 17
